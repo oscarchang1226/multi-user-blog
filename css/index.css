@@ -2,10 +2,144 @@
     box-sizing: border-box;
     margin: 0;
     padding: 0;
+    text-decoration: none;
 }
 
-main, form {
+body {
+    height: 100vh;
+    width: 100%;
     display: flex;
     flex-direction: column;
+}
+
+header {
+    height: 48px;
+    font-size: .75em;
+    border-bottom: 2px solid rgba(48, 115, 148, .5);
+    margin-bottom: 8px;
+}
+
+.header_inner {
+    height: 100%;
+    display: flex;
+}
+
+.header_inner h1 {
+    margin: auto;
+}
+
+.header_inner a {
+    height: 40px;
+    color: rgba(48,115,148,1);
+}
+
+nav {
+    height: 48px;
+    display: flex;
+    flex-direction: row-reverse;
+    margin-bottom: 8px;
+}
+
+.nav_buttons {
+    width: 80px;
+    text-align: center;
+    border: 2px solid rgba(48,115,148,1);
+    border-radius: 4px;
+    margin: auto 8px;
+}
+
+.nav_buttons a {
+    padding: 8px;
+    display: block;
+    color: rgba(255 ,255 ,255, 1);
+    background-color: rgba(48,115,148,1);
+    text-transform: uppercase;
+    font-size: .75em;
+}
+
+.nav_buttons:hover, .lone_button:hover {
+    -webkit-box-shadow: 2px 2px 5px 1px rgba(0,0,0, .4);
+    -moz-box-shadow: 2px 2px 5px 1px rgba(0,0,0, .4);
+    box-shadow: 2px 2px 5px 1px rgba(0,0,0, .4);
+}
+
+main, form, .entry_container {
+    display: flex;
+    flex-direction: column;
+}
+
+.lone_button {
+    width: 80px;
+    text-align: center;
+    border: 2px solid rgb(76, 175, 80);
+    border-radius: 4px;
+    margin: auto 8px 8px auto;
+}
+
+.lone_button a {
+    padding: 8px;
+    display: block;
+    color: rgba(255, 255, 255, 1);
+    background-color: rgba(76, 175, 80, 1);
+    font-size: .75em;
+    text-transform: uppercase;
+}
+
+.entry_container {
+    padding: 8px;
+    border-bottom: 1px solid rgba(0, 0, 0, .13);
+}
+
+.entry_header {
+    display: flex;
+    flex-wrap: wrap;
+    margin-bottom: 4px;
+}
+
+.entry_header h2 {
+    width: 70%;
+    font-size: 14px;
+}
+
+.entry_author {
+    width: 30%;
+    margin: auto 0px;
+    text-align: right;
+    font-size: 14px;
+}
+
+.entry_created {
+    width: 100%;
+    text-align: right;
+    font-size: 14px;
+}
+
+.entry_content {
+    max-height: 30vh;
+    font-family: monospace;
+}
+
+.entry_footer {
+    display: flex;
+}
+
+.entry_footer input[type=image]{
+    margin: auto 4px auto auto;
+}
+
+.entry_footer span {
+    margin: auto 0;
+}
+
+footer {
+    margin-bottom: 0px;
+    margin-top: auto;
+    display: flex;
+    padding: 8px;
+    border-top: 2px solid rgba(48, 115, 148, .5);
+    color: rgba(48,115,148,1);
+}
+
+.footer_inner {
     width: 100%;
 }

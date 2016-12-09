@@ -15,3 +15,16 @@ indexes:
   - name: entry
   - name: created
     direction: desc
+
+- kind: Comment
+  ancestor: yes
+  properties:
+  - name: entry
+  - name: created
+    direction: desc
+
+- kind: Entry
+  ancestor: yes
+  properties:
+  - name: created
+    direction: desc

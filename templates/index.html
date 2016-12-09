@@ -14,13 +14,19 @@
         </header>
         <nav>
             {% if current_user %}
-                <a href="/logout">Log out</a>
+                <div class="nav_buttons">
+                    <a href="/logout">Log out</a>
+                </div>
             {% else %}
                 {% if not signup_page %}
-                    <a href="/signup">Sign up</a>
+                    <div class="nav_buttons">
+                        <a href="/signup">Sign up</a>
+                    </div>
                 {% endif %}
                 {% if not login_page %}
-                    <a href="/login">Log in</a>
+                    <div class="nav_buttons">
+                        <a href="/login">Log in</a>
+                    </div>
                 {% endif %}
             {% endif %}
         </nav>
