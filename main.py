@@ -177,6 +177,21 @@ class BlogHandler(Handler):
         params["entries"] = Entry.all().order("-created")
         self.render("blog.html", **params)
 
+    def post(self):
+        params = {}
+        if(self.current_user):
+            entry_id = int(self.request.get("entry_id"))
+            entry = Entry.get_by_id(entry_id)
+            if(self.current_user.key() in entry.liked_by):
+                entry.liked_by.remove(self.current_user.key())
+            else:
+                entry.liked_by.append(self.current_user.key())
+            entry.put()
+            params["entries"] = entry.all().order("-created")
+            self.render("blog.html", **params)
+        else:
+            self.redirect("/login")
+
 
 class NewPostHandler(Handler):
     def get(self):
@@ -210,65 +225,90 @@ class NewPostHandler(Handler):
 class EntryHandler(Handler):
     def get(self, entry_id):
         if(self.current_user):
+            params = {}
             entry = Entry.get_by_id(int(entry_id))
-            if(entry and
-               (entry.user.key().id() == self.current_user.key().id())):
-                able_to_edit = True
-            else:
-                able_to_edit = False
 
             entry_comments = Comment.all().filter("entry =", entry)
             entry_comments = entry_comments.order("-created")
 
-            self.render("entry.html", entry=entry, able_to_edit=able_to_edit,
-                        entry_comments=entry_comments)
+            params["entry"] = entry
+            params["entry_comments"] = entry_comments
+
+            self.render("entry.html", **params)
         else:
             self.redirect("/login")
 
     def post(self, entry_id):
         entry = Entry.get_by_id(int(entry_id))
 
-        if(entry and
-           (entry.user.key().id() == self.current_user.key().id())):
-            able_to_edit = True
-        else:
-            able_to_edit = False
-
         params = {}
-        params["entry"] = entry
-        params["able_to_edit"] = able_to_edit
+        entry_comments = Comment.all().filter("entry =", entry)
 
-        if(self.request.get("save")):
-            subject = self.request.get("subject")
-            content = self.request.get("content")
-            if(subject and content):
-                entry.subject = subject
-                entry.content = content
-                entry.put()
-                self.redirect("/blog")
+        if(self.request.get("like_entry")):
+            if(self.current_user.key() in entry.liked_by):
+                entry.liked_by.append(self.current_user.key())
 
             else:
-                params["invalid_entry"] = True
+                entry.liked_by.remove(self.current_user.key())
 
-        elif(self.request.get("delete")):
-            temp_comments = Comment.all().filter("entry =", entry)
-            for comment in temp_comments:
-                comment.delete()
-            entry.delete()
-            self.redirect("/blog")
+            entry.put()
+
+        elif(self.request.get("edit")):
+            params["edit_entry"] = True
+
+        elif(self.request.get("edit_comment")):
+            params["edit_comment"] = True
+            params["comment_id"] = int(self.request.get("comment_id"))
 
         elif(self.request.get("add_comment")):
-            comment = self.request.get("comment")
-            if(comment):
+            content = self.request.get("new_comment_content")
+            if(content):
                 comment_model = Comment(user=self.current_user, entry=entry,
-                                        content=comment)
+                                        content=content)
                 comment_model.put()
-                self.redirect("/blog/%s" % entry.key().id())
+                entry_comments = comment_model.all().filter("entry =", entry)
 
             else:
-                params["invalid_comment"] = True
+                params["new_comment_invalid"] = True
 
-        entry_comments = Comment.all().filter("entry =", entry)
+        else:
+            if(self.request.get("save")):
+                subject = self.request.get("subject")
+                content = self.request.get("content")
+
+                if(subject and content):
+                    entry.subject = subject
+                    entry.content = content
+                    entry.put()
+
+                else:
+                    params["entry_invalid"] = True
+
+            elif(self.request.get("delete")):
+                entry.delete()
+                self.redirect("/blog")
+
+            elif(self.request.get("save_comment") or
+                 self.request.get("delete_comment")):
+                comment_id = int(self.request.get("comment_id"))
+                comment = Comment.get_by_id(comment_id)
+
+                if(self.request.get("save_comment")):
+                    content = self.request.get("comment_content")
+
+                    if(content):
+                        comment.content = content
+                        comment.put()
+
+                    else:
+                        params["comment_invalid"] = True
+
+                else:
+                    comment.delete()
+
+                entry_comments = comment.all().filter("entry =", entry)
+
+        params["entry"] = entry
         entry_comments = entry_comments.order("-created")
         params["entry_comments"] = entry_comments
 
