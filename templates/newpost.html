@@ -1,0 +1,23 @@
+{% extends "index.html" %}
+
+{% block content %}
+    <main>
+        <h2>New Post</h2>
+        <div class="error">
+            {% if invalid %}
+                <span>Both Subject and content are required.</span>
+            {% endif %}
+        </div>
+        <form method="post">
+            <label>
+                <span>Subject</span>
+                <input type="text" name="subject" value="{{subject}}" />
+            </label>
+            <label>
+                <span>Content</span>
+                <textarea name="content">{{content}}</textarea>
+            </label>
+            <input type="submit"/>
+        </form>
+    </main>
+{% endblock %}

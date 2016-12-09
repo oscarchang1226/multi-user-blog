@@ -1,0 +1,20 @@
+{% extends "index.html" %}
+
+{% block content %}
+    <main>
+        <div class="lone_button">
+            <a href="/newpost">New Post</a>
+        </div>
+        {% for entry in entries %}
+            <div class="entry_container">
+                <div class="entry_header">
+                    <h2><a href="/blog/{{entry.key().id()}}">{{entry.subject}}</a></h2>
+                    <span>{{entry.created.strftime("%B %d, %Y")}}</span>
+                    <span>{{entry.liked_by}}</span>
+                    <span>{{entry.likes}}</span>
+                </div>
+                <pre class="entry_content">{{entry.content}}</pre>
+            </div>
+        {% endfor %}
+    </main>
+{% endblock %}

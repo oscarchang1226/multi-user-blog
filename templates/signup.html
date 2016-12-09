@@ -1,0 +1,61 @@
+{% extends "index.html" %}
+
+{% block content %}
+    <main>
+        <!-- {% if users %}
+            {% for user in users %}
+                <div class="user_block">
+                    <span>{{user.email}}</span>
+                </div>
+            {% endfor %}
+        {% endif %} -->
+        <form method="post">
+            <h2>Register</h2>
+            <label>
+                <span>Username</span>
+                <input type="text" name="username" value="{{username}}"/>
+                <div class="error">
+                    {% if valid_username == None %}
+                        <span>Please enter a valid username. (3 - 20 characters)</span>
+                    {% else %}
+                        {% if username_taken %}
+                            <span>Username taken. Please enter a different username</span>
+                        {% endif %}
+                    {% endif %}
+                </div>
+            </label>
+            <label>
+                <span>Password</span>
+                <input type="password" name="password"/>
+                <div class="error">
+                    {% if valid_password == None %}
+                        <span>Please enter a valid password.</span>
+                    {% endif %}
+                </div>
+            </label>
+            <label>
+                <span>Confirm password</span>
+                <input type="password" name="verify"/>
+                <div class="error">
+                    {% if valid_password and not valid_verify %}
+                        <span>Password not match.</span>
+                    {% endif %}
+                </div>
+            </label>
+            <label>
+                <span>Email(Optional)</span>
+                <input type="email" name="email" value="{{email}}"/>
+                <div class="error">
+                    {% if valid_email == None %}
+                        <span>Please enter a valid email. Ex: example@example.com</span>
+                    {% else %}
+                        {% if email_taken %}
+                            <span>Email taken. Please enter a different email</span>
+                        {% endif %}
+                    {% endif %}
+                </div>
+            </label>
+            <input type="submit"/>
+        </form>
+    </main>
+{% endblock %}

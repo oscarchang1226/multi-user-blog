@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1"/>
+        <title>U blog</title>
+        <link type="text/css" rel="stylesheet" href="css/index.css"/>
+    </head>
+    <body>
+        <header>
+            <div class="header_inner">
+                <h1><a href="/blog">U BLOG</a></h1>
+            </div>
+        </header>
+        <nav>
+            {% if current_user %}
+                <a href="/logout">Log out</a>
+            {% else %}
+                {% if not signup_page %}
+                    <a href="/signup">Sign up</a>
+                {% endif %}
+                {% if not login_page %}
+                    <a href="/login">Log in</a>
+                {% endif %}
+            {% endif %}
+        </nav>
+        {% block content %}
+        {% endblock %}
+        <footer>
+            <div class="footer_inner">
+                <span>Footer</span>
+            </div>
+        </footer>
+    </body>
+</html>

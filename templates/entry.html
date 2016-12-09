@@ -1,0 +1,66 @@
+{% extends "index.html" %}
+
+{% block content %}
+    <main>
+        <form method="post">
+            {% if entry %}
+                <div class="entry_container">
+                    <div class="entry_header">
+                        {% if able_to_edit %}
+                            <div class="error">
+                                {% if invalid_entry %}
+                                    <span>Both Subject and content are required.</span>
+                                {% endif %}
+                            </div>
+                            <label>
+                                <span>Subject</span>
+                                <input type="text" name="subject" value="{{entry.subject}}"/>
+                            </label>
+                        {% else %}
+                            <h2>{{entry.subject}}</h2>
+                        {% endif %}
+                        <span>{{entry.created.strftime("%B %d, %Y")}}</span>
+                    </div>
+                    {% if able_to_edit %}
+                        <label>
+                            <span>Content</span>
+                            <textarea name="content">{{entry.content}}</textarea>
+                        </label>
+                    {% else %}
+                        <pre class="entry_content">{{entry.content}}</pre>
+                    {% endif %}
+                </div>
+                {% if able_to_edit %}
+                    <div class="form_buttons">
+                        <input type="submit" name="save" value="Save" />
+                        <input type="submit" name="delete" value="Delete" />
+                    </div>
+                {% endif %}
+                {% if entry_comments %}
+                    {% for comment in entry_comments %}
+                        <div class="comment_container">
+                            <div class="comment_header">
+                                <h3>{{comment.user.username}}</h3>
+                                <span>{{comment.created.strftime("%B %d, %Y")}}</span>
+                            </div>
+                            <pre class="comment_content">{{comment.content}}</pre>
+                        </div>
+                    {% endfor %}
+                {% endif %}
+                <div class="comment_form">
+                    <div class="error">
+                        {% if invalid_comment %}
+                            <span>A comment is required to submit a comment.</span>
+                        {% endif %}
+                    </div>
+                    <textarea name="comment" placeholder="Add a comment"></textarea>
+                    <input type="submit" name="add_comment" value="Add Comment"/>
+                </div>
+            {% else %}
+                <div class="block_message">
+                    <span>Post Not Found</span>
+                </div>
+            {% endif %}
+        </form>
+    </main>
+{% endblock %}
