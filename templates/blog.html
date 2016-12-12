@@ -7,15 +7,14 @@
         </div>
             {% for entry in entries %}
             <form method="post">
-                <div class="entry_container">
-                    <div class="entry_header">
+                <div class="container">
+                    <div class="container_header">
                         <h2><a href="/blog/{{entry.key().id()}}">{{entry.subject}}</a></h2>
-                        <span class="entry_author">{{entry.user.username}}</span>
-                        <span class="entry_created">{{entry.created.strftime("%B %d, %Y")}}</span>
+                        <span class="author">{{entry.user.username}}</span>
+                        <span class="created">{{entry.created.strftime("%B %d, %Y")}}</span>
                     </div>
-                    <pre class="entry_content">{{entry.content}}</pre>
-                    <div class="entry_footer">
-                        <input type="hidden" name="entry_id" value="{{entry.key().id()}}"/>
+                    <pre class="container_content">{{entry.content}}</pre>
+                    <div class="container_footer">
                         {% if current_user and (entry.user.key().id() != current_user.key().id()) %}
                             {% if current_user.key() in entry.liked_by %}
                                 <input class="like_button liked" type="image" value="Like"/>
@@ -28,6 +27,7 @@
                         {% if (entry.liked_by | length) > 0 %}
                             <span>{{entry.liked_by|length}}</span>
                         {% endif %}
+                        <input type="hidden" name="entry_id" value="{{entry.key().id()}}"/>
                     </div>
                 </div>
             </form>
