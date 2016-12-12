@@ -10,6 +10,12 @@
         <header>
             <div class="header_inner">
                 <h1><a href="/blog">U BLOG</a></h1>
+                {% if current_user %}
+                    <div class="current_user">
+                        <span>Account</span>
+                        <span>{{current_user.username}}</span>
+                    </div>
+                {% endif %}
             </div>
         </header>
         <nav>

@@ -25,7 +25,9 @@
                         {% else %}
                             <input class="like_button" type="image" disabled="true" value="Like"/>
                         {% endif %}
-                        <span>{{entry.liked_by|length}}</span>
+                        {% if (entry.liked_by | length) > 0 %}
+                            <span>{{entry.liked_by|length}}</span>
+                        {% endif %}
                     </div>
                 </div>
             </form>

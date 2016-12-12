@@ -3,7 +3,7 @@
 {% block content %}
     <main>
         {% if entry %}
-            <form method="post">
+            <form method="post" class="entry_form">
                 <div class="entry_container">
                     <div class="entry_header">
                         {% if current_user.key().id() == entry.user.key().id() and edit_entry %}
@@ -31,28 +31,30 @@
                         <pre class="entry_content">{{entry.content}}</pre>
                     {% endif %}
                     <div class="entry_footer">
-                        {% if entry.user.key().id() != current_user.key().id() %}
-                            {% if current_user.key() in entry.liked_by %}
-                                <input class="like_button liked" name="like_entry" type="image" value="Like"/>
+                        {% if not edit_entry %}
+                            {% if entry.user.key().id() != current_user.key().id() %}
+                                {% if current_user.key() in entry.liked_by %}
+                                    <input class="like_button liked" name="like_entry" type="image" value="Like"/>
+                                {% else %}
+                                    <input class="like_button" name="like_entry" type="image" value="Like"/>
+                                {% endif %}
                             {% else %}
-                                <input class="like_button" name="like_entry" type="image" value="Like"/>
+                                <input class="like_button" type="image" disabled="true" />
                             {% endif %}
-                        {% else %}
-                            <input class="like_button" type="image" disabled="true" />
+                            {% if (entry.liked_by|length) > 0 %}
+                                <span>{{entry.liked_by|length}}</span>
+                            {% endif %}
                         {% endif %}
-                        <span>{{entry.liked_by|length}}</span>
+                        {% if current_user.key().id() == entry.user.key().id() %}
+                            {% if edit_entry %}
+                                <input type="image" name="save" value="Save" />
+                                <input type="image" name="delete" value="Delete" />
+                            {% else %}
+                                <input type="image" name="edit" value="Edit"/>
+                            {% endif %}
+                        {% endif %}
                     </div>
                 </div>
-                {% if current_user.key().id() == entry.user.key().id() %}
-                    <div class="form_buttons">
-                        {% if edit_entry %}
-                            <input type="submit" name="save" value="Save" />
-                            <input type="submit" name="delete" value="Delete" />
-                        {% else %}
-                            <input type="submit" name="edit" value="Edit"/>
-                        {% endif %}
-                    </div>
-                {% endif %}
             </form>
                 {% for comment in entry_comments %}
                     <form method="post">
@@ -85,16 +87,16 @@
                         {% endif %}
                     </form>
                 {% endfor %}
-                <form method="post">
-                    <div class="comment_form">
-                        <div class="error">
-                            {% if new_comment_invalid %}
-                                <span>A comment is required to submit a comment.</span>
-                            {% endif %}
-                        </div>
-                        <textarea name="new_comment_content" placeholder="Add a comment"></textarea>
-                        <input type="submit" name="add_comment" value="Add Comment"/>
+                <form method="post" class="main_form">
+                    <div class="error">
+                        {% if new_comment_invalid %}
+                            <span>A comment is required to submit a comment.</span>
+                        {% endif %}
                     </div>
+                    <label>
+                        <textarea name="new_comment_content" placeholder="Add a comment"></textarea>
+                    </label>
+                    <input type="submit" name="add_comment" value="Submit"/>
                 </form>
         {% else %}
             <div class="block_message">

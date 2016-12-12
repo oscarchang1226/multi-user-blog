@@ -2,13 +2,13 @@
 
 {% block content %}
     <main>
-        <h2>New Post</h2>
-        <div class="error">
-            {% if invalid %}
-                <span>Both Subject and content are required.</span>
-            {% endif %}
-        </div>
-        <form method="post">
+        <form method="post" class="main_form">
+            <h2>New Post</h2>
+            <div class="error">
+                {% if invalid %}
+                    <span>Both Subject and content are required.</span>
+                {% endif %}
+            </div>
             <label>
                 <span>Subject</span>
                 <input type="text" name="subject" value="{{subject}}" />

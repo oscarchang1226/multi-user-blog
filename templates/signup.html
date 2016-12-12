@@ -2,19 +2,12 @@
 
 {% block content %}
     <main>
-        <!-- {% if users %}
-            {% for user in users %}
-                <div class="user_block">
-                    <span>{{user.email}}</span>
-                </div>
-            {% endfor %}
-        {% endif %} -->
-        <form method="post">
+        <form method="post" class="main_form">
             <h2>Register</h2>
             <label>
                 <span>Username</span>
                 <input type="text" name="username" value="{{username}}"/>
-                <div class="error">
+                <div class="error inline">
                     {% if valid_username == None %}
                         <span>Please enter a valid username. (3 - 20 characters)</span>
                     {% else %}
@@ -27,7 +20,7 @@
             <label>
                 <span>Password</span>
                 <input type="password" name="password"/>
-                <div class="error">
+                <div class="error inline">
                     {% if valid_password == None %}
                         <span>Please enter a valid password.</span>
                     {% endif %}
@@ -36,7 +29,7 @@
             <label>
                 <span>Confirm password</span>
                 <input type="password" name="verify"/>
-                <div class="error">
+                <div class="error inline">
                     {% if valid_password and not valid_verify %}
                         <span>Password not match.</span>
                     {% endif %}
@@ -45,7 +38,7 @@
             <label>
                 <span>Email(Optional)</span>
                 <input type="email" name="email" value="{{email}}"/>
-                <div class="error">
+                <div class="error inline">
                     {% if valid_email == None %}
                         <span>Please enter a valid email. Ex: example@example.com</span>
                     {% else %}
