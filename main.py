@@ -205,6 +205,8 @@ class Handler(webapp2.RequestHandler):
                 cookie_hash = user_cookie.split("|")[1]
                 if(user.hashp.split("|")[1] == cookie_hash):
                     self.current_user = user
+            else:
+                self.response.delete_cookie("user_id")
 
 
 class MainPageHandler(Handler):
