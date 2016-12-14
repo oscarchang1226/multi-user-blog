@@ -297,8 +297,8 @@ class BlogHandler(Handler):
         self.render("blog.html", **params)
 
     def post(self):
-        params = {}
         if(self.current_user):
+            params = {}
             entry_id = int(self.request.get("entry_id"))
             entry = Entry.get_entry_by_id(entry_id)
             if(self.current_user.key() in entry.liked_by):
@@ -320,24 +320,28 @@ class NewPostHandler(Handler):
             self.redirect("/login")
 
     def post(self):
-        subject = self.request.get("subject")
-        content = self.request.get("content")
+        if(self.current_user):
+            subject = self.request.get("subject")
+            content = self.request.get("content")
 
-        params = {}
-        params["subject"] = subject
-        params["content"] = content
+            params = {}
+            params["subject"] = subject
+            params["content"] = content
 
-        if(subject and content):
-            if(self.current_user):
-                entry = Entry.create_entry(user=self.current_user,
-                                           subject=subject, content=content)
-                entry.put()
-                self.redirect("/blog")
+            if(subject and content):
+                if(self.current_user):
+                    new_post = dict(user=self.current_user,
+                                    subject=subject, content=content)
+                    entry = Entry.create_entry(**new_post)
+                    entry.put()
+                    self.redirect("/blog")
+                else:
+                    self.redirect("/login")
             else:
-                self.redirect("/login")
+                params["invalid"] = True
+                self.render("newpost.html", **params)
         else:
-            params["invalid"] = True
-            self.render("newpost.html", **params)
+            self.redirect("/login")
 
 
 class EntryHandler(Handler):
@@ -356,84 +360,87 @@ class EntryHandler(Handler):
             self.redirect("/login")
 
     def post(self, entry_id):
-        params = {}
-        entry = Entry.get_entry_by_id(int(entry_id))
-        comment_id = self.request.get("comment_id")
-        comment = None
-        if(comment_id):
-            params["comment_id"] = int(comment_id)
-            comment = Comment.get_comment_by_id(int(comment_id))
-        have_error = False
-        edit_mode = False
+        if(self.current_user):
+            params = {}
+            entry = Entry.get_entry_by_id(int(entry_id))
+            comment_id = self.request.get("comment_id")
+            comment = None
+            if(comment_id):
+                params["comment_id"] = int(comment_id)
+                comment = Comment.get_comment_by_id(int(comment_id))
+            have_error = False
+            edit_mode = False
 
-        if(self.request.get("like_entry")):
-            if(self.current_user.key() in entry.liked_by):
-                entry.liked_by.remove(self.current_user.key())
-
-            else:
-                entry.liked_by.append(self.current_user.key())
-
-            entry.put()
-
-        elif(self.request.get("edit")):
-            params["edit_entry"] = True
-            edit_mode = True
-
-        elif(self.request.get("edit_comment")):
-            params["edit_comment"] = True
-            edit_mode = True
-
-        elif(self.request.get("add_comment")):
-            content = self.request.get("new_comment_content")
-            if(content):
-                comment_model = Comment.create_comment(user=self.current_user,
-                                                       entry=entry,
-                                                       content=content)
-                comment_model.put()
-
-            else:
-                params["new_comment_invalid"] = True
-                have_error = True
-
-        elif(self.request.get("save")):
-                subject = self.request.get("subject")
-                content = self.request.get("content")
-
-                if(subject and content):
-                    entry.subject = subject
-                    entry.content = content
-                    entry.put()
+            if(self.request.get("like_entry")):
+                if(self.current_user.key() in entry.liked_by):
+                    entry.liked_by.remove(self.current_user.key())
 
                 else:
-                    params["entry_invalid"] = True
-                    params["edit_entry"] = True
+                    entry.liked_by.append(self.current_user.key())
+
+                entry.put()
+
+            elif(self.request.get("edit")):
+                params["edit_entry"] = True
+                edit_mode = True
+
+            elif(self.request.get("edit_comment")):
+                params["edit_comment"] = True
+                edit_mode = True
+
+            elif(self.request.get("add_comment")):
+                content = self.request.get("new_comment_content")
+                if(content):
+                    new_comment = dict(user=self.current_user, entry=entry,
+                                       content=content)
+                    comment_model = Comment.create_comment(**new_comment)
+                    comment_model.put()
+
+                else:
+                    params["new_comment_invalid"] = True
                     have_error = True
 
-        elif(self.request.get("delete")):
-            entry.delete()
+            elif(self.request.get("save")):
+                    subject = self.request.get("subject")
+                    content = self.request.get("content")
 
-        elif(self.request.get("save_comment")):
-            content = self.request.get("comment_content")
+                    if(subject and content):
+                        entry.subject = subject
+                        entry.content = content
+                        entry.put()
 
-            if(content):
-                comment.content = content
-                comment.put()
+                    else:
+                        params["entry_invalid"] = True
+                        params["edit_entry"] = True
+                        have_error = True
 
+            elif(self.request.get("delete")):
+                entry.delete()
+
+            elif(self.request.get("save_comment")):
+                content = self.request.get("comment_content")
+
+                if(content):
+                    comment.content = content
+                    comment.put()
+
+                else:
+                    params["comment_invalid"] = True
+                    have_error = True
+
+            elif(self.request.get("delete_comment")):
+                comment.delete()
+
+            if(have_error or edit_mode):
+                params["entry"] = entry
+                entry_comments = Comment.get_comments_by_entry(entry)
+                params["entry_comments"] = entry_comments
+
+                self.render("entry.html", **params)
             else:
-                params["comment_invalid"] = True
-                have_error = True
-
-        elif(self.request.get("delete_comment")):
-            comment.delete()
-
-        if(have_error or edit_mode):
-            params["entry"] = entry
-            entry_comments = Comment.get_comments_by_entry(entry)
-            params["entry_comments"] = entry_comments
-
-            self.render("entry.html", **params)
+                self.redirect("/blog/%s" % entry.key().id())
         else:
-            self.redirect("/blog/%s" % entry.key().id())
+            self.redirect("/login")
 
 app = webapp2.WSGIApplication([
     ("/", MainPageHandler),

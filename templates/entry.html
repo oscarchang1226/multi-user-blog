@@ -103,7 +103,7 @@
                         </form>
                     {% endfor %}
                 </div>
-                {% if not (edit_comment or edit_entry) %}
+                {% if not (edit_comment or edit_entry) and current_user %}
                     <form method="post" class="main_form">
                         <div class="error">
                             {% if new_comment_invalid %}
