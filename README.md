@@ -13,7 +13,7 @@ Multi user blog with user accounts and blog submissions running with Google App 
     `git clone https://github.com/oscarchang1226/multi-user-blog.git`
 
 2.  Open command prompt and change working directory to working directory.
-3.  Run command `dev_appserver .` to run server.
+3.  Run command `dev_appserver.py .` to run server.
 4.  Open a web browser and direct to `localhost:8080`.
 
 ## License
