@@ -1,0 +1,45 @@
+main {
+    padding-bottom: 24px;
+}
+
+.entry_form {
+    width: 95%;
+    margin-left: auto;
+    margin-right: auto;
+    border: 1px solid rgba(0,0,0,.13);
+    border-radius: 4px;
+    box-shadow: 2px 2px 4px rgba(0,0,0,.4);
+    margin-bottom: 16px;
+}
+
+.container_header {
+    border-bottom: 1px solid rgba(0,0,0,.4);
+    margin-bottom: 8px;
+}
+
+.main_form .container_header {
+    border-bottom: none;
+}
+
+.container_content {
+    font-size:16px;
+}
+
+.comments {
+    width: 95%;
+    margin: auto;
+    padding-left: 24px;
+}
+
+.current_user span {
+    margin: auto 0px auto auto;
+}
+
+.login, .register {
+    width: 400px;
+    margin-left: auto;
+    margin-right: auto;
+    border: 1px solid rgba(0,0,0,.4);
+    padding: 36px;
+    border-radius: 8px;
+}

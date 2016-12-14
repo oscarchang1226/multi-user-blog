@@ -406,6 +406,7 @@ class EntryHandler(Handler):
 
                 else:
                     params["entry_invalid"] = True
+                    params["edit_entry"] = True
                     have_error = True
 
         elif(self.request.get("delete")):

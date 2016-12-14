@@ -5,6 +5,8 @@
         <meta name="viewport" content="width=device-width, initial-scale=1"/>
         <title>U blog</title>
         <link type="text/css" rel="stylesheet" href="/css/index.css"/>
+        <link media="screen and (min-width: 500px)" type="text/css" rel="stylesheet" href="/css/medium.css"/>
+        <link media="screen and (min-width: 650px)" type="text/css" rel="stylesheet" href="/css/large.css"/>
     </head>
     <body>
         <header>
@@ -38,10 +40,5 @@
         </nav>
         {% block content %}
         {% endblock %}
-        <footer>
-            <div class="footer_inner">
-                <span>Footer</span>
-            </div>
-        </footer>
     </body>
 </html>
