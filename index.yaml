@@ -11,12 +11,6 @@ indexes:
 # your application using appcfg.py.
 
 - kind: Comment
-  properties:
-  - name: entry
-  - name: created
-    direction: desc
-
-- kind: Comment
   ancestor: yes
   properties:
   - name: entry
