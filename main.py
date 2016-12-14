@@ -417,6 +417,9 @@ class EntryHandler(Handler):
             elif(self.request.get("delete")):
                 entry.delete()
 
+            elif(self.request.get("cancel")):
+                self.redirect("/blog/%s" % entry.key().id())
+
             elif(self.request.get("save_comment")):
                 content = self.request.get("comment_content")
 
