@@ -1,6 +1,5 @@
 import os
 import re
-import string
 
 import webapp2
 import jinja2

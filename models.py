@@ -1,5 +1,6 @@
 import random
 import hmac
+import string
 
 from google.appengine.ext import db
 
