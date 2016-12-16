@@ -3,21 +3,48 @@
 {% block content %}
     <main>
         <form method="post" class="main_form">
-            <h2>New Post</h2>
-            <div class="error">
-                {% if invalid %}
-                    <span>Both Subject and content are required.</span>
-                {% endif %}
-            </div>
-            <label>
-                <span>Subject</span>
-                <input type="text" name="subject" value="{{subject}}" />
-            </label>
-            <label>
-                <span>Content</span>
-                <textarea name="content">{{content}}</textarea>
-            </label>
+            {% if entry %}
+                <h2>Edit Post</h2>
+                <div class="error">
+                    {% if invalid %}
+                        <span>Both Subject and Content are required.</span>
+                    {% endif %}
+                </div>
+                <label>
+                    <span>Subject</span>
+                    <input type="text" name="subject" value="{{entry.subject}}" />
+                </label>
+                <label>
+                    <span>Content</span>
+                    <textarea name="content">{{entry.content}}</textarea>
+                </label>
+            {% else %}
+                <h2>New Post</h2>
+                <div class="error">
+                    {% if invalid %}
+                        <span>Both Subject and Content are required.</span>
+                    {% endif %}
+                </div>
+                <label>
+                    <span>Subject</span>
+                    <input type="text" name="subject" value="{{subject}}" />
+                </label>
+                <label>
+                    <span>Content</span>
+                    <textarea name="content">{{content}}</textarea>
+                </label>
+            {% endif %}
             <input type="submit"/>
+            {% if entry %}
+                <div class="lone_button warn">
+                    <a href="/blog/{{entry.key().id()}}">Cancel</a>
+                </div>
+            {% endif %}
         </form>
-    </main>
+            {% if entry %}
+                <form method="post" class="main_form" action="/blog/{{entry.key().id()}}/deletepost">
+                    <input type="submit" class="danger" value="delete"/>
+                </form>
+            {% endif %}
+        </main>
 {% endblock %}

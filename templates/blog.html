@@ -6,7 +6,7 @@
             <a href="/newpost">New Post</a>
         </div>
             {% for entry in entries %}
-            <form method="post" class="entry_form">
+            <form method="post" class="entry_form" action="/blog/{{entry.key().id()}}/like">
                 <div class="container">
                     <div class="container_header">
                         <h2><a href="/blog/{{entry.key().id()}}">{{entry.subject}}</a></h2>

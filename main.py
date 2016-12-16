@@ -298,21 +298,6 @@ class BlogHandler(Handler):
         params["entries"] = Entry.get_entries()
         self.render("blog.html", **params)
 
-    def post(self):
-        if(self.current_user):
-            params = {}
-            entry_id = int(self.request.get("entry_id"))
-            entry = Entry.get_entry_by_id(entry_id)
-            if(self.current_user.key() in entry.liked_by):
-                entry.liked_by.remove(self.current_user.key())
-            else:
-                entry.liked_by.append(self.current_user.key())
-            entry.put()
-            params["entries"] = Entry.get_entries()
-            self.render("blog.html", **params)
-        else:
-            self.redirect("/login")
-
 
 class NewPostHandler(Handler):
     def get(self):
@@ -365,44 +350,68 @@ class EntryHandler(Handler):
         if(self.current_user):
             params = {}
             entry = Entry.get_entry_by_id(int(entry_id))
-            comment_id = self.request.get("comment_id")
-            comment = None
-            if(comment_id):
-                params["comment_id"] = int(comment_id)
-                comment = Comment.get_comment_by_id(int(comment_id))
-            have_error = False
-            edit_mode = False
 
-            if(self.request.get("like_entry")):
-                if(self.current_user.key() in entry.liked_by):
-                    entry.liked_by.remove(self.current_user.key())
+            params["entry"] = entry
+            if(entry):
+                params["entry_comments"] = Comment.get_comments_by_entry(entry)
+                self.render("entry.html", **params)
 
-                else:
-                    entry.liked_by.append(self.current_user.key())
-
-                entry.put()
-
-            elif(self.request.get("edit")):
-                params["edit_entry"] = True
-                edit_mode = True
-
-            elif(self.request.get("edit_comment")):
-                params["edit_comment"] = True
-                edit_mode = True
-
-            elif(self.request.get("add_comment")):
-                content = self.request.get("new_comment_content")
                 if(content):
                     new_comment = dict(user=self.current_user, entry=entry,
                                        content=content)
                     comment_model = Comment.create_comment(**new_comment)
                     comment_model.put()
+                    self.redirect("/blog/%s" % entry.key().id())
 
                 else:
                     params["new_comment_invalid"] = True
-                    have_error = True
+                    self.render("entry.html", **params)
 
-            elif(self.request.get("save")):
+            else:
+                self.redirect("/blog")
+        else:
+            self.redirect("/login")
+
+
+class LikePostHandler(Handler):
+    def post(self, entry_id):
+        if(self.current_user):
+            entry = Entry.get_entry_by_id(int(entry_id))
+            if(entry):
+                if(self.current_user.key() in entry.liked_by):
+                    entry.liked_by.remove(self.current_user.key())
+                else:
+                    entry.liked_by.append(self.current_user.key())
+                entry.put()
+                self.redirect(self.request.headers["Referer"])
+            else:
+                self.redirect("/")
+        else:
+            self.redirect("/login")
+
+
+class EditPostHandler(Handler):
+    def get(self, entry_id):
+        if(self.current_user):
+            entry = Entry.get_entry_by_id(int(entry_id))
+            if(entry):
+                if(entry.user.key().id() == self.current_user.key().id()):
+                    comments = Comment.get_comments_by_entry(entry)
+                    return self.render("entry.html", entry=entry,
+                                       entry_comments=comments,
+                                       edit_entry=True)
+                else:
+                    self.redirect("/blog/%s" % entry.key().id())
+            self.redirect("/blog")
+        else:
+            self.redirect("/login")
+
+    def post(self, entry_id):
+        if(self.current_user):
+            entry = Entry.get_entry_by_id(int(entry_id))
+            if(entry):
+                if(entry.user.key().id() == self.current_user.key().id()):
+                    params = {}
                     subject = self.request.get("subject")
                     content = self.request.get("content")
 
@@ -410,40 +419,94 @@ class EntryHandler(Handler):
                         entry.subject = subject
                         entry.content = content
                         entry.put()
-
+                        self.redirect("/blog/%s" % entry.key().id())
                     else:
-                        params["entry_invalid"] = True
+                        comments = Comment.get_comments_by_entry(entry)
+                        params["entry_comments"] = comments
+                        params["subject"] = subject
+                        params["content"] = content
+                        params["invalid_entry"] = True
                         params["edit_entry"] = True
-                        have_error = True
+                        self.render("newpost.html", **params)
+                else:
+                    self.redirect("/blog/%s" % entry.key().id())
+            else:
+                self.redirect("/blog")
+        else:
+            self.redirect("/login")
 
-            elif(self.request.get("delete")):
+
+class DeletePostHandler(Handler):
+    def post(self, entry_id):
+        if(self.current_user):
+            entry = Entry.get_entry_by_id(int(entry_id))
+            if(entry and
+               (entry.user.key().id() == self.current_user.key().id())):
                 entry.delete()
 
-            elif(self.request.get("cancel")):
-                self.redirect("/blog/%s" % entry.key().id())
+            self.redirect("/blog")
+        else:
+            self.redirect("/login")
 
-            elif(self.request.get("save_comment")):
-                content = self.request.get("comment_content")
 
-                if(content):
-                    comment.content = content
-                    comment.put()
-
-                else:
-                    params["comment_invalid"] = True
-                    have_error = True
-
-            elif(self.request.get("delete_comment")):
-                comment.delete()
-
-            if(have_error or edit_mode):
-                params["entry"] = entry
-                entry_comments = Comment.get_comments_by_entry(entry)
-                params["entry_comments"] = entry_comments
-
-                self.render("entry.html", **params)
+class EditCommentHandler(Handler):
+    def get(self, entry_id, comment_id):
+        if(self.current_user):
+            comment = Comment.get_comment_by_id(int(comment_id))
+            entry = Entry.get_entry_by_id(int(entry_id))
+            if(entry and comment):
+                if(comment.user.key().id() == self.current_user.key().id()):
+                    comments = Comment.get_comments_by_entry(entry)
+                    params = {}
+                    params["entry"] = entry
+                    params["entry_comments"] = comments
+                    params["edit_comment"] = True
+                    params["comment_id"] = int(comment_id)
+                    self.render("entry.html", **params)
             else:
-                self.redirect("/blog/%s" % entry.key().id())
+                self.redirect("/blog")
+        else:
+            self.redirect("/login")
+
+    def post(self, entry_id, comment_id):
+        if(self.current_user):
+            comment = Comment.get_comment_by_id(int(comment_id))
+            entry = Entry.get_entry_by_id(int(entry_id))
+            if(comment and entry):
+                if(comment.user.key().id() == self.current_user.key().id()):
+                    content = self.request.get("comment_content")
+                    if(content):
+                        comment.content = content
+                        comment.put()
+                        self.redirect("/blog/%s" % (entry_id))
+
+                    else:
+                        comments = Comment.get_comments_by_entry(entry)
+                        params = {}
+                        params["entry"] = entry
+                        params["entry_comments"] = comments
+                        params["edit_comment"] = True
+                        params["comment_id"] = comment_id
+                        params["comment_invalid"] = True
+                        self.render("entry.html", **params)
+
+            else:
+                self.redirect("/blog")
+        else:
+            self.redirect("/login")
+
+
+class DeleteCommentHandler(Handler):
+    def post(self, entry_id, comment_id):
+        if(self.current_user):
+            entry = Entry.get_entry_by_id(int(entry_id))
+            comment = Comment.get_comment_by_id(int(comment_id))
+            if(entry and comment):
+                if(comment.user.key().id() == self.current_user.key().id()):
+                    comment.delete()
+                    self.redirect("/blog/%s" % entry_id)
+
+            self.redirect("/blog")
         else:
             self.redirect("/login")
 
@@ -452,7 +515,12 @@ app = webapp2.WSGIApplication([
     ("/signup", SignupHandler),
     ("/login", LoginHandler),
     ("/logout", LogoutHandler),
+    ("/newpost", NewPostHandler),
     ("/blog", BlogHandler),
     ("/blog/(\d+)", EntryHandler),
-    ("/newpost", NewPostHandler)
+    ("/blog/(\d+)/like", LikePostHandler),
+    ("/blog/(\d+)/edit", EditPostHandler),
+    ("/blog/(\d+)/delete", DeletePostHandler),
+    ("/blog/(\d+)/comments/(\d+)", EditCommentHandler),
+    ("/blog/(\d+)/comments/(\d+)/delete", DeleteCommentHandler)
 ])
