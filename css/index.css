@@ -274,3 +274,18 @@ input[type=submit]:not(.danger) {
     border: 2px solid rgb(219, 51, 51) !important;
     background-color: rgb(219, 51, 51) !important;
 }
+
+.editing_comment {
+    border-bottom: none !important;
+}
+
+.delete_comment {
+    border-bottom: 1px solid rgba(0, 0, 0, .13);
+}
+
+.simple_button a {
+    font: 13.33px Arial;
+    color: initial;
+    border: 1px solid rgba(0,0,0,.4);
+    margin-left: 4px;
+}

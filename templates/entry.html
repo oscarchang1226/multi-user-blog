@@ -60,7 +60,7 @@
                                     <span>{{entry.liked_by|length}}</span>
                                 {% endif %}
                                 <div class="simple_button">
-                                    <a href="/blog/{{entry.key().id()}}/edit">edit</a>
+                                    <a href="/blog/{{entry.key().id()}}/edit">Edit</a>
                                 </div>
                             {% endif %}
                         </div>
@@ -71,7 +71,7 @@
                 <h3>Comments</h3>
                 {% for comment in entry_comments %}
                     {% if edit_comment and (comment.key().id() == comment_id) %}
-                        <form method="post" class="main_form" action="/blog/{{entry.key().id()}}/comments/{{comment.key().id()}}">
+                        <form method="post" class="main_form editing_comment" action="/blog/{{entry.key().id()}}/comments/{{comment.key().id()}}">
                             <div class="container">
                                 <div class="container_header">
                                     <div class="error">
@@ -87,12 +87,15 @@
                                 </label>
                                 {% if current_user.key().id() == comment.user.key().id() %}
                                     <div class="container_footer">
-                                        <input type="image" value="Save"/>
+                                        <input type="submit" value="Save"/>
+                                        <div class="lone_button warn">
+                                            <a href="/blog/{{entry.key().id()}}">Cancel</a>
+                                        </div>
                                     </div>
                                 {% endif %}
                             </div>
                         </form>
-                        <form method="post" class="main_form" action="/blog/{{entry.key().id()}}/comments/{{comment.key().id()}}/delete">
+                        <form method="post" class="main_form delete_comment" action="/blog/{{entry.key().id()}}/comments/{{comment.key().id()}}/delete">
                             <input type="submit" class="danger" value="delete"/>
                         </form>
                     {% else %}

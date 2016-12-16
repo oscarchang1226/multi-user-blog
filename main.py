@@ -354,8 +354,7 @@ class EntryHandler(Handler):
             params["entry"] = entry
             if(entry):
                 params["entry_comments"] = Comment.get_comments_by_entry(entry)
-                self.render("entry.html", **params)
-
+                content = self.request.get("new_comment_content")
                 if(content):
                     new_comment = dict(user=self.current_user, entry=entry,
                                        content=content)
@@ -504,7 +503,7 @@ class DeleteCommentHandler(Handler):
             if(entry and comment):
                 if(comment.user.key().id() == self.current_user.key().id()):
                     comment.delete()
-                    self.redirect("/blog/%s" % entry_id)
+                    return self.redirect("/blog/%s" % entry_id)
 
             self.redirect("/blog")
         else:
