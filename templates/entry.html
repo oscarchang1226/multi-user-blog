@@ -51,15 +51,18 @@
                                 {% else %}
                                     <input class="like_button" type="image" value="Like"/>
                                 {% endif %}
+                                {% if (entry.liked_by|length) > 0 %}
+                                    <span>{{entry.liked_by|length}}</span>
+                                {% endif %}
                             {% else %}
                                 <input class="like_button" type="image" disabled="true" value="Like"/>
+                                {% if (entry.liked_by|length) > 0 %}
+                                    <span>{{entry.liked_by|length}}</span>
+                                {% endif %}
+                                <div class="simple_button">
+                                    <a href="/blog/{{entry.key().id()}}/edit">edit</a>
+                                </div>
                             {% endif %}
-                            {% if (entry.liked_by|length) > 0 %}
-                                <span>{{entry.liked_by|length}}</span>
-                            {% endif %}
-                            <div class="simple_button">
-                                <a href="/blog/{{entry.key().id()}}/edit">edit</a>
-                            </div>
                         </div>
                     </div>
                 </form>
